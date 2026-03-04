@@ -133,11 +133,26 @@ extraEnvVars: {}
 service:
   # It is recommended to use a LoadBalancer service type with an Ingress controller
   type: LoadBalancer
+  # Set the loadBalancerClass for the Service (e.g. "io.metallb/metallb")
+  # Requires Kubernetes 1.24+. Only applies when service type is LoadBalancer.
+  loadBalancerClass: ""
   # Extra labels to add to the Service
   labels: {}
   # Extra annotations to add to the Service
   annotations: {}
     # metallb.io/loadBalancerIPs: 192.168.1.20
+
+# Optional secondary service exposing only the management UI.
+# Useful for exposing the controller UI over a separate network like Tailscale
+# without exposing device adoption/discovery ports.
+managementService:
+  enabled: false
+  type: LoadBalancer
+  loadBalancerClass: ""
+  # Extra labels to add to the management Service
+  labels: {}
+  # Extra annotations to add to the management Service
+  annotations: {}
 
 # Configure Ingress for the Omada Controller service. Requires an Ingress controller within the cluster.
 # By default, this ingress controller will terminate TLS and forward traffic to the Omada Controller,

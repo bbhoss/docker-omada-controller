@@ -109,8 +109,21 @@ The following table lists the configurable parameters of the Omada Controller ch
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `service.type` | Kubernetes service type | `LoadBalancer` |
+| `service.loadBalancerClass` | Load balancer class (e.g. `io.metallb/metallb`). Requires Kubernetes 1.24+ | `""` |
 | `service.labels` | Additional service labels | `{}` |
 | `service.annotations` | Additional service annotations | `{}` |
+
+### Management Service Configuration
+
+An optional secondary service that exposes only the management UI ports (HTTP/HTTPS). This is useful for accessing the controller UI over a separate network (e.g. Tailscale) without exposing device adoption and discovery ports.
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `managementService.enabled` | Enable the management-only service | `false` |
+| `managementService.type` | Kubernetes service type | `LoadBalancer` |
+| `managementService.loadBalancerClass` | Load balancer class (e.g. `tailscale`) | `""` |
+| `managementService.labels` | Additional service labels | `{}` |
+| `managementService.annotations` | Additional service annotations | `{}` |
 
 ### Ingress Configuration
 
@@ -180,6 +193,27 @@ persistence:
     size: 5Gi
   logs:
     size: 2Gi
+```
+
+### LoadBalancer with a Specific Load Balancer Class
+
+If your cluster has multiple load balancer implementations (e.g. MetalLB), you can set the `loadBalancerClass` on the primary service:
+
+```yaml
+service:
+  type: LoadBalancer
+  loadBalancerClass: io.metallb/metallb
+```
+
+### Management UI via Tailscale
+
+Expose only the management UI over Tailscale while keeping device ports on the primary service:
+
+```yaml
+managementService:
+  enabled: true
+  type: LoadBalancer
+  loadBalancerClass: tailscale
 ```
 
 ### Installation with Ingress and TLS
